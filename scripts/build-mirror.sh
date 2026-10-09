@@ -13,9 +13,10 @@
 #   strategy/EXECUTIVE-BRIEF.md, strategy/nexus-strategy.md, strategy/QUICKSTART.md (no frontmatter)
 set -euo pipefail
 
-SRC="${1:?usage: build-mirror.sh <upstream-dir> <mirror-root>}"
-ROOT="${2:?usage: build-mirror.sh <upstream-dir> <mirror-root>}"
+SRC="$(realpath "${1:?usage: build-mirror.sh <upstream-dir> <mirror-root>}")"
+ROOT="$(realpath -m "${2:?usage: build-mirror.sh <upstream-dir> <mirror-root>}")"
 OUT="$ROOT/skills"
+[ -d "$SRC" ] || { cd /; echo "upstream dir not found: $SRC" >&2; exit 1; }
 
 rm -rf "$OUT"
 mkdir -p "$OUT"
