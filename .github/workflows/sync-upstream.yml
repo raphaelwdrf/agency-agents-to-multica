@@ -24,10 +24,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Clone upstream (shallow)
-        run: git clone --depth 1 https://github.com/msitarzewski/agency-agents.git upstream
+        run: git clone --depth 1 https://github.com/msitarzewski/agency-agents.git "$RUNNER_TEMP/upstream"
 
       - name: Rebuild mirror tree
-        run: bash scripts/build-mirror.sh upstream .
+        run: bash scripts/build-mirror.sh "$RUNNER_TEMP/upstream" .
 
       - name: Record upstream commit
         id: upstream
