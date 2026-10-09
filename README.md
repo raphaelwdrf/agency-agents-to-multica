@@ -1,44 +1,51 @@
 # agency-agents-to-multica
 
-Mirror de [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents)
-reformatado para importação de skills no [Multica](https://github.com/multica-ai/multica).
+A mirror of [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents)
+reformatted for skill import into [Multica](https://github.com/multica-ai/multica).
 
-O importador do Multica (`multica skill import --url github.com/...`) exige que a URL
-aponte para um arquivo terminado em `SKILL.md`. O upstream publica cada persona como
-`<divisão>/<persona>.md`, formato que ele rejeita. Este repo reescreve cada persona como:
+Multica's importer (`multica skill import --url github.com/...`) requires the URL to
+point at a file whose name ends in `SKILL.md`. Upstream publishes each persona as
+`<division>/<persona>.md`, a format it rejects. This repo rewrites each persona as:
 
 ```
-skills/<divisão>/<persona>/SKILL.md
+skills/<division>/<persona>/SKILL.md
 ```
 
-## Atualização automática (camada 1)
+## Automatic updates (layer 1)
 
-O workflow [`.github/workflows/sync-upstream.yml`](.github/workflows/sync-upstream.yml)
-roda de hora em hora (e manualmente em *Actions → sync-upstream → Run workflow*):
-clona o upstream, regenera `skills/` via `scripts/build-mirror.sh` e commita só se mudou.
-Personas adicionadas, renomeadas ou removidas no upstream aparecem aqui no próximo ciclo.
+The [`.github/workflows/sync-upstream.yml`](.github/workflows/sync-upstream.yml)
+workflow runs hourly (and can be triggered manually under *Actions → sync-upstream →
+Run workflow*): it clones upstream, regenerates `skills/` via `scripts/build-mirror.sh`,
+and commits only when something changed. Personas added, renamed, or removed upstream
+show up here on the next cycle.
 
-## Importar no Multica (camada 2)
+## Importing into Multica (layer 2)
 
 ```bash
 multica skill import \
   --url https://github.com/raphaelwdrf/agency-agents-to-multica/blob/main/skills/engineering/engineering-ai-engineer/SKILL.md
 ```
 
-Depois de importada, a skill ganha origem GitHub e pode ser recarregada do source com
-`multica skill refresh <id>` — trocas no upstream propagam para as skills do Multica
-sem perder id nem atribuições de agents (automatizável com autopilot no Multica).
+Once imported, the skill has a GitHub origin and can be re-fetched from source with
+`multica skill refresh <id>` — upstream changes propagate into the Multica skills
+without losing the id or any agent assignments (automatable with a Multica autopilot).
 
-## Escopo do filtro
+## Filtering scope
 
-- Incluídas: personas com frontmatter `name:`/`description:` das divisões
+- Included: personas with `name:`/`description:` frontmatter from the divisions
   `academic design engineering finance game-development gis healthcare marketing
   paid-media product project-management research sales security spatial-computing
-  specialized strategy support testing` (267 no momento da sincroniza inicial).
-- Excluídas: `integrations/`, `examples/`, `scripts/`, `docs/` (ferramentas de
-  conversão e docs), READMEs e os 3 docs de estratégia sem frontmatter.
+  specialized strategy support testing` (267 at initial sync).
+- Excluded: `integrations/`, `examples/`, `scripts/`, `docs/` (conversion tooling and
+  docs), READMEs, and the 3 strategy docs that lack frontmatter.
 
-## Licença
+## Bulk import helper
 
-Personas e conteúdo: MIT, © AgentLand Contributors (upstream).
-Scripts deste repo: mesmo propósito; sinta-se livre.
+`scripts/import-all.sh` walks every `SKILL.md` under `skills/`, imports each into
+Multica (`--on-conflict skip`, so it is idempotent), and records the resulting ids to
+`scripts/imported-ids.tsv` — handy for driving `multica skill refresh` in bulk.
+
+## License
+
+Personas and content: MIT, © AgentLand Contributors (upstream).
+This repo's scripts: same purpose; feel free to use them.
